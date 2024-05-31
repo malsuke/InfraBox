@@ -1,5 +1,5 @@
-variable "cloudflare_api_key" {
-  description = "The API key for your Cloudflare account"
+variable "api_token" {
+  description = "The API TOKEN for your Cloudflare account"
   type        = string
 }
 

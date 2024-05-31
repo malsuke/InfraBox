@@ -8,10 +8,10 @@ terraform {
 }
 
 provider "cloudflare" {
-  api_token = var.cloudflare_api_key
+  api_token = var.api_token
 }
 
-resource "cloudflare_r2_bucket" "bucket" {
+resource "cloudflare_r2_bucket" "example" {
   account_id = var.account_id
-  name       = "cloudflare_r2_bucket"
+  name       = "terraform-test-bucket"
 }
