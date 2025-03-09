@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app-deployment
+  labels:
+    app: flask-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: python-app:latest  # Docker Hub にプッシュしたイメージを指定
+        command: ["python3", "app.py"]
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: app
+          mountPath: /usr/src/app
+      volumes:
+      - name: app
+        hostPath:
+          path: /Users/yuki/go-test-dir/k8s/python/app
+          type: Directory
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app-service
+spec:
+  type: NodePort
+  selector:
+    app: flask-app
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+    nodePort: 30007  # オプショナル: Kubernetes が自動的に割り当てる場合はコメントアウト
+

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment # This specifies the kind of Kubernetes resource you are deploying
+metadata:
+  name: mysql-deployment # Name of your deployment
+  labels:
+    app: mysql
+spec:
+  replicas: 1 # Specifies the number of instances
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: 'mysql:8'
+          volumeMounts:
+            - name: sql-init-config
+              mountPath: /docker-entrypoint-initdb.d
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sql-secret
+                  key: password
+          ports:
+            - containerPort: 3306
+      volumes:
+        - name: sql-init-config
+          configMap:
+            name: db-init-configmap
+            items:
+              - key: init.sql
+                path: init.sql

@@ -1,0 +1,25 @@
+services:
+  gitlab:
+    image: "gitlab/gitlab-ce:latest"
+    restart: always
+    environment:
+      GITLAB_OMNIBUS_CONFIG: external_url 'http://gitlab.malsuke.dev/'
+    volumes:
+      - "./config:/etc/gitlab"
+      - "./logs:/var/log/gitlab"
+      - "./data:/var/opt/gitlab"
+    shm_size: "256m"
+
+  tunnel:
+    restart: always
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+
+  # nginx:
+  #   image: nginx:1.24
+  #   container_name: nginx
+  #   volumes:
+  #     - ./nginx/conf.d:/etc/nginx/conf.d
+  #     - ./nginx/.htpasswd:/etc/nginx/.htpasswd
