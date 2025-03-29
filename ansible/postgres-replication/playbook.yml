@@ -1,0 +1,26 @@
+---
+- name: Configure PostgreSQL Primary/Replica
+  gather_facts: true
+  hosts: all
+  become: true
+  vars:
+    postgresql_version: "16"
+  roles:
+    - common
+    - postgresql
+- name: Setup Primary Server
+  hosts: primary
+  vars:
+    postgresql_version: "16"
+  become: true
+  roles:
+    - primary
+
+- name: Setup Replica Server
+  gather_facts: true
+  hosts: replica
+  vars:
+    postgresql_version: "16"
+  become: true
+  roles:
+    - replica

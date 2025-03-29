@@ -1,0 +1,6 @@
+---
+- name: Initialize Replica Server
+  import_tasks: init_replica.yml
+
+- name: Start Replication
+  import_tasks: recovery.yml

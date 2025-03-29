@@ -1,0 +1,6 @@
+---
+- name: Initialize Primary Server
+  import_tasks: init_primary.yml
+
+- name: Create replication user
+  import_tasks: create_replication_user.yml

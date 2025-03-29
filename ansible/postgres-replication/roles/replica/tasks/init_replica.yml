@@ -1,0 +1,23 @@
+---
+- name: Stop PostgreSQL service
+  systemd:
+    name: postgresql
+    state: stopped
+
+- name: Clear existing data
+  file:
+    path: "/var/lib/postgresql/{{postgresql_version}}/main"
+    state: absent
+
+- name: Clone primary data using pg_basebackup
+  command: "pg_basebackup -R -h {{ hostvars['primary']['ansible_host'] }} -U replicator -D /var/lib/postgresql/{{postgresql_version}}/main -P"
+  become_user: postgres
+  environment:
+    PGPASSWORD: "replication_password"
+
+- name: Set appropriate permissions
+  file:
+    path: "/var/lib/postgresql/{{postgresql_version}}/main"
+    owner: postgres
+    group: postgres
+    recurse: yes

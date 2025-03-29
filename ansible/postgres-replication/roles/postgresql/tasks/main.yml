@@ -1,0 +1,21 @@
+---
+- name: Install PostgreSQL
+  apt:
+    name: postgresql-{{ postgresql_version }}
+    state: present
+
+- name: Ensure PostgreSQL service is running
+  systemd:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Verify PostgreSQL is running
+  command: "pg_isready -d postgres -U postgres"
+  register: postgres_status
+  changed_when: false
+  failed_when: postgres_status.rc != 0
+
+- name: Display PostgreSQL status
+  debug:
+    msg: "PostgreSQL is running: {{ postgres_status.stdout }}"

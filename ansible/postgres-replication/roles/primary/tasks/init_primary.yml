@@ -1,0 +1,34 @@
+# roles/postgresql/tasks/main.yml
+---
+- name: Ensure PostgreSQL is installed and running
+  systemd:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Configure PostgreSQL to listen on all interfaces
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    regexp: "^#?listen_addresses"
+    line: "listen_addresses = '*'"
+  notify: restart_postgresql
+
+- name: Enable replication in PostgreSQL configuration
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    line: "{{ item }}"
+  with_items:
+    - "wal_level = replica"
+    - "max_wal_senders = 10"
+    - "wal_keep_size = 512MB"
+    - "hot_standby = on"
+  notify: restart_postgresql
+
+- name: Allow replication connections
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+    line: "host replication replicator 0.0.0.0/0 md5"
+  notify: restart_postgresql
+
+- name: Apply handlers if needed
+  meta: flush_handlers
